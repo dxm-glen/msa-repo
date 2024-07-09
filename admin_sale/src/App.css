@@ -46,11 +46,35 @@ p {
   margin: 5px 0;
 }
 
-.inventory-item {
+.inventory-item, .customer-item {
   border-bottom: 1px solid #ddd;
   padding: 10px 0;
 }
 
-.inventory-item:last-child {
+.inventory-item:last-child, .customer-item:last-child {
   border-bottom: none;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.pagination button {
+  margin: 0 5px;
+  padding: 5px 10px;
+  border: none;
+  background-color: #5c5c5c;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.pagination button:hover {
+  background-color: #5c5c5c;
+}
+
+.pagination button:focus {
+  outline: none;
 }
