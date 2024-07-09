@@ -11,9 +11,9 @@ function Customer() {
     // 예제 고객 데이터
     const customerData = [
       { customer_id: 1, name: 'Ook', email: 'Ook@example.com', phone: '123-456-7890', tiers: 'Gold'},
-      { customer_id: 2, name: 'Logan', email: 'Logan@example.com', phone: '987-654-3210', tiers: 'Vip' },
-      { customer_id: 3, name: 'Mark', email: 'Mark@example.com', phone: '555-666-7777', tiers: 'Silver' },
-      { customer_id: 4, name: 'Maini', email: 'Maini@example.com', phone: '111-222-3333', tiers: 'Beginner' },
+      { customer_id: 2, name: 'Logan', email: 'Logan@example.com', phone: '987-654-3210', tiers: 'Vip'},
+      { customer_id: 3, name: 'Mark', email: 'Mark@example.com', phone: '555-666-7777', tiers: 'Silver'},
+      { customer_id: 4, name: 'Maini', email: 'Maini@example.com', phone: '111-222-3333', tiers: 'Beginner'},
       { customer_id: 5, name: 'Lucy', email: 'Lucy@example.com', phone: '152-199-199', tiers: 'Pletinum'},
       { customer_id: 6, name: 'Glen', email: 'Glen@example.com', phone: '222-222-222', tiers: 'Vip'}
     ];
