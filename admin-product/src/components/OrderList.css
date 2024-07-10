@@ -1,0 +1,16 @@
+.order-list {
+  list-style: none;
+  padding: 0;
+}
+
+.order-list li {
+  padding: 10px;
+  margin: 5px 0;
+  cursor: pointer;
+  border-bottom: 1px solid #ccc;
+  transition: background-color 0.3s;
+}
+
+.order-list li:hover {
+  background-color: #f9f9f9;
+}
