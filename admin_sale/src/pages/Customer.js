@@ -1,38 +1,45 @@
 import React, { useState, useEffect } from 'react';
+import dynamoDB from '../aws-config';
+import CustomerList from '../components/CustomerList'; // CustomerList 컴포넌트 import
 
 function Customer() {
-  // 로컬 상태에 고객 정보 데이터 저장
   const [customers, setCustomers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 3;
 
-  // 로컬 데이터를 사용하여 고객 정보를 가져오는 함수
-  const fetchAllCustomers = () => {
-    // 예제 고객 데이터
-    const customerData = [
-      { customer_id: 1, name: 'Ook', email: 'Ook@example.com', phone: '123-456-7890', tiers: 'Gold'},
-      { customer_id: 2, name: 'Logan', email: 'Logan@example.com', phone: '987-654-3210', tiers: 'Vip'},
-      { customer_id: 3, name: 'Mark', email: 'Mark@example.com', phone: '555-666-7777', tiers: 'Silver'},
-      { customer_id: 4, name: 'Maini', email: 'Maini@example.com', phone: '111-222-3333', tiers: 'Beginner'},
-      { customer_id: 5, name: 'Lucy', email: 'Lucy@example.com', phone: '152-199-199', tiers: 'Pletinum'},
-      { customer_id: 6, name: 'Glen', email: 'Glen@example.com', phone: '222-222-222', tiers: 'Vip'}
-    ];
+  // DynamoDB에서 모든 고객 정보를 가져오는 함수
+  const fetchAllCustomers = async () => {
+    const params = {
+      TableName: 'hnu_cutomers_db',
+    };
 
-    // 로컬 상태에 고객 데이터 저장
-    setCustomers(customerData);
+    try {
+      const data = await dynamoDB.scan(params).promise();
+      console.log('Fetched all customers:', data); // 가져온 데이터 콘솔에서 확인
+      if (data.Items) {
+        setCustomers(data.Items); // 고객 정보 상태 변수에 저장
+      } else {
+        console.log('No customers found in DynamoDB');
+      }
+    } catch (error) {
+      console.error('Error fetching customers:', error); // 오류 발생 시 콘솔에서 확인
+    }
   };
 
-  // 컴포넌트가 마운트될 때 고객 정보를 가져옴
+  // 컴포넌트가 마운트될 때 모든 고객 정보를 가져옴
   useEffect(() => {
     fetchAllCustomers();
   }, []);
 
+  // 현재 페이지에 해당하는 항목을 계산
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentCustomers = customers.slice(indexOfFirstItem, indexOfLastItem);
 
+  // 페이지 변경 함수
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+  // 총 페이지 수 계산
   const pageNumbers = [];
   for (let i = 1; i <= Math.ceil(customers.length / itemsPerPage); i++) {
     pageNumbers.push(i);
@@ -41,15 +48,7 @@ function Customer() {
   return (
     <div>
       <h1>고객 목록</h1>
-      <ul>
-        {currentCustomers.map((customer) => (
-          <li key={customer.customer_id}>
-            <h2>{customer.name}</h2>
-            <p>Email: {customer.email}</p>
-            <p>Phone: {customer.phone}</p>
-          </li>
-        ))}
-      </ul>
+      <CustomerList customers={currentCustomers} /> {/* 현재 페이지에 해당하는 항목을 CustomerList에 전달 */}
       <div className="pagination">
         {pageNumbers.map(number => (
           <button key={number} onClick={() => paginate(number)}>
