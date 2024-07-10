@@ -1,0 +1,77 @@
+.App {
+  text-align: center;
+}
+
+.App-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #282c34;
+  padding: 20px;
+  color: white;
+}
+
+.header-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.header-button {
+  background-color: #282c34;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  color: white;
+  font-size: 16px;
+  border-radius: 4px;
+}
+
+.header-button:hover {
+  background-color: #323c50;
+}
+
+.ProductList {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 20px;
+  gap: 20px;
+}
+
+.ProductItem {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 20px;
+  width: calc(33.333% - 40px);
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.ProductItem img {
+  width: 100%;
+  height: auto;
+}
+
+.ProductItem button {
+  background-color: #ffffff;
+  border: none;
+  padding: 10px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.ProductItem button:hover {
+  background-color: #808080;
+}
+
+@media (max-width: 1024px) {
+  .ProductItem {
+    width: calc(50% - 40px);
+  }
+}
+
+@media (max-width: 768px) {
+  .ProductItem {
+    width: calc(100% - 40px);
+  }
+}
