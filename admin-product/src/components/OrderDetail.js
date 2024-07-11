@@ -1,53 +1,25 @@
 import React from 'react';
-import './OrderDetail.css';
+import { useParams } from 'react-router-dom';
+import { orders } from '../data';
 
-const orders = [
-    {
-        id: 1,
-        sellerName: "Kitchen Goods Co.",
-        orderDate: "2023-07-01",
-        status: "Pending",
-        items: [
-            { id: 1, productName: "Pan", quantity: 1, price: 29.99 },
-            { id: 2, productName: "Knife", quantity: 2, price: 14.99 }
-        ]
-    },
-    {
-        id: 2,
-        sellerName: "Home Essentials Ltd.",
-        orderDate: "2023-07-02",
-        status: "Shipped",
-        items: [
-            { id: 3, productName: "Spatula", quantity: 3, price: 5.99 },
-            { id: 4, productName: "Cutting Board", quantity: 1, price: 19.99 }
-        ]
-    }
-];
+const OrderDetail = () => {
+  const { orderId } = useParams();
+  const order = orders.find(o => o.id === parseInt(orderId, 10));
 
-const OrderDetail = ({ orderId }) => {
-    const order = orders.find(order => order.id === orderId);
+  if (!order) {
+    return <div className="text-red-500">Order not found</div>;
+  }
 
-    if (!order) {
-        return <div>Select an order to see details</div>;
-    }
-
-    return (
-        <div>
-            <h2>Order Detail</h2>
-            <p>Order ID: {order.id}</p>
-            <p>Seller Name: {order.sellerName}</p>
-            <p>Order Date: {order.orderDate}</p>
-            <p>Order Status: {order.status}</p>
-            <h3>Items</h3>
-            <ul>
-                {order.items.map(item => (
-                    <li key={item.id}>
-                        {item.productName} - {item.quantity} x ${item.price}
-                    </li>
-                ))}
-            </ul>
-        </div>
-    );
+  return (
+    <div className="bg-gray-800 p-6 rounded-lg shadow-md">
+      <h1 className="text-3xl font-bold mb-4">Order Detail</h1>
+      <p className="text-xl mb-2"><strong>Order ID:</strong> {order.id}</p>
+      <p className="text-xl mb-2"><strong>Product:</strong> {order.product}</p>
+      <p className="text-xl mb-2"><strong>Quantity:</strong> {order.quantity}</p>
+      <p className="text-xl mb-2"><strong>Status:</strong> {order.status}</p>
+      <p className="text-xl mb-2"><strong>Description:</strong> {order.description}</p>
+    </div>
+  );
 };
 
 export default OrderDetail;

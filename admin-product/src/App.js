@@ -1,43 +1,36 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
-import Home from './pages/Home';
-import OrderList from './components/OrderList';
-import OrderDetail from './components/OrderDetail';
-import './App.css';
+import Dashboard from './pages/Dashboard';
+import Orders from './pages/Orders';
+import Production from './pages/Production';
+import Shipments from './pages/Shipments';
 
-const App = () => {
-    return (
-        <Router>
-            <div className="App">
-                <h1>Admin Site</h1>
-                <nav className="nav-tabs">
-                    <Link to="/">Home</Link>
-                    <Link to="/orders">Order List</Link>
-                </nav>
-                <div className="container">
-                    <Routes>
-                        <Route path="/" element={<Home />} />
-                        <Route path="/orders" element={<OrderListPage />} />
-                    </Routes>
-                </div>
+function App() {
+  return (
+    <Router>
+      <div className="min-h-screen bg-gray-900 text-white">
+        <header className="bg-black p-4">
+          <nav className="container mx-auto flex justify-between">
+            <Link to="/" className="text-2xl font-bold">NXT CLOUD Product</Link>
+            <div>
+              <Link to="/" className="ml-4 text-gray-300 hover:text-white">Dashboard</Link>
+              <Link to="/orders" className="ml-4 text-gray-300 hover:text-white">Orders</Link>
+              <Link to="/production" className="ml-4 text-gray-300 hover:text-white">Production</Link>
+              <Link to="/shipments" className="ml-4 text-gray-300 hover:text-white">Shipments</Link>
             </div>
-        </Router>
-    );
-};
-
-const OrderListPage = () => {
-    const [selectedOrderId, setSelectedOrderId] = React.useState(null);
-
-    return (
-        <div style={{ display: 'flex', width: '100%' }}>
-            <div className="order-list">
-                <OrderList onSelectOrder={setSelectedOrderId} />
-            </div>
-            <div className="order-detail">
-                <OrderDetail orderId={selectedOrderId} />
-            </div>
-        </div>
-    );
-};
+          </nav>
+        </header>
+        <main className="container mx-auto p-4">
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/orders/*" element={<Orders />} />
+            <Route path="/production/*" element={<Production />} />
+            <Route path="/shipments/*" element={<Shipments />} />
+          </Routes>
+        </main>
+      </div>
+    </Router>
+  );
+}
 
 export default App;
