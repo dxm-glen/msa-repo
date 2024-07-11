@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from "react-router-dom";
 import { UserContext } from '../App';
 import "../App.css";
+import dynamoDb from '../aws-config';
 
 const Cart = () => {
   const navigate = useNavigate();
@@ -16,13 +17,39 @@ const Cart = () => {
     }
   }, [user]);
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     // 주문 처리 로직 추가
     console.log('Order placed:', cart);
+
+    // 제품 수량 업데이트
+    for (const item of cart) {
+      await updateProductQuantity(item.product_id, -item.quantity);
+    }
+
     // 주문 완료 후 장바구니 비우기
     localStorage.removeItem(`cart_${user.ID}`);
     setCart([]);
     setOrderMessage('Your order has been placed successfully!');
+  };
+
+  const updateProductQuantity = async (productId, quantityChange) => {
+    const params = {
+      TableName: 'hnu_product_id',
+      Key: {
+        product_id: productId,
+      },
+      UpdateExpression: 'set quantity = quantity + :val',
+      ExpressionAttributeValues: {
+        ':val': quantityChange,
+      },
+      ReturnValues: 'UPDATED_NEW',
+    };
+
+    try {
+      await dynamoDb.update(params).promise();
+    } catch (err) {
+      console.error('Error updating product quantity:', err);
+    }
   };
 
   const CartList = () => {
@@ -39,8 +66,8 @@ const Cart = () => {
           <>
             <ul className="cart-items">
               {cart.map(item => (
-                <li key={item.id} className="cart-item">
-                  <span className="item-name">{item.name}</span>
+                <li key={item.product_id} className="cart-item">
+                  <span className="item-name">{item.product_name}</span>
                   <span className="item-price">${item.price}</span>
                   <span className="item-quantity">x {item.quantity}</span>
                   <span className="item-total">${(item.price * item.quantity).toFixed(2)}</span>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import '../App.css';
 import { useNavigate } from 'react-router-dom';
-import productsData from '../product.json';
+import dynamoDb from '../aws-config';
 import { UserContext } from '../App';
 
 const MainPage = () => {
@@ -11,7 +11,20 @@ const MainPage = () => {
   const { user, logout } = useContext(UserContext);
 
   useEffect(() => {
-    setProducts(productsData.products);
+    const fetchProducts = async () => {
+      const params = {
+        TableName: 'hnu_product_id',
+      };
+
+      try {
+        const data = await dynamoDb.scan(params).promise();
+        setProducts(data.Items);
+      } catch (err) {
+        console.error('Error fetching products:', err);
+      }
+    };
+
+    fetchProducts();
     if (user) {
       const userCart = JSON.parse(localStorage.getItem(`cart_${user.ID}`)) || [];
       setCart(userCart);
@@ -27,10 +40,10 @@ const MainPage = () => {
 
     setCart(prevCart => {
       let newCart;
-      const existingItem = prevCart.find(item => item.id === product.id);
+      const existingItem = prevCart.find(item => item.product_id === product.product_id);
       if (existingItem) {
         newCart = prevCart.map(item =>
-          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+          item.product_id === product.product_id ? { ...item, quantity: item.quantity + 1 } : item
         );
       } else {
         newCart = [...prevCart, { ...product, quantity: 1 }];
@@ -39,35 +52,36 @@ const MainPage = () => {
       localStorage.setItem(`cart_${user.ID}`, JSON.stringify(newCart));
       return newCart;
     });
+
+    updateProductQuantity(product.product_id, -1);
   };
 
-  const CartList = () => {
-    if (!user) return null; // 로그인하지 않은 경우 카트를 표시하지 않음
+  const updateProductQuantity = async (productId, quantityChange) => {
+    const params = {
+      TableName: 'hnu_product_id',
+      Key: {
+        product_id: productId,
+      },
+      UpdateExpression: 'set quantity = quantity + :val',
+      ExpressionAttributeValues: {
+        ':val': quantityChange,
+      },
+      ReturnValues: 'UPDATED_NEW',
+    };
 
-    return (
-      <div className="CartList">
-        <h2>Cart</h2>
-        {cart.length === 0 ? (
-          <p>Your cart is empty</p>
-        ) : (
-          <ul>
-            {cart.map(item => (
-              <li key={item.id}>
-                {item.name} - ${item.price} x {item.quantity}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-    );
+    try {
+      await dynamoDb.update(params).promise();
+    } catch (err) {
+      console.error('Error updating product quantity:', err);
+    }
   };
 
   const ProductList = () => {
     return (
       <div className="ProductList">
         {products.map(product => (
-          <div key={product.id} className="ProductItem">
-            <h2>{product.name}</h2>
+          <div key={product.product_id} className="ProductItem">
+            <h2>{product.product_name}</h2>
             <p>${product.price}</p>
             <button onClick={() => addToCart(product)}>Add to Cart</button>
           </div>

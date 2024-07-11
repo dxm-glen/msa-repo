@@ -1,8 +1,8 @@
 import React, { useState, useContext } from 'react';
 import "../App.css";
 import { useNavigate } from "react-router-dom";
-import memberData from '../member.json';
 import { UserContext } from '../App';
+import dynamoDb from '../aws-config';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -11,16 +11,31 @@ const Login = () => {
   const [error, setError] = useState('');
   const { login } = useContext(UserContext);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    const user = memberData.member.find(m => m.ID === ID && m.PW === PW);
-    if (user) {
-      // 로그인 성공
-      login(user);  // UserContext의 login 함수 사용
-      navigate('/');
-    } else {
-      // 로그인 실패
-      setError('Invalid ID or password');
+
+    const params = {
+      TableName: 'hnu_cutomers_db',
+      Key: {
+        user_email: ID,
+      },
+    };
+
+    try {
+      const data = await dynamoDb.get(params).promise();
+      const user = data.Item;
+
+      if (user && user.user_PW === PW) {
+        // 로그인 성공
+        login(user);  // UserContext의 login 함수 사용
+        navigate('/');
+      } else {
+        // 로그인 실패
+        setError('Invalid ID or password');
+      }
+    } catch (err) {
+      console.error('Error fetching user:', err);
+      setError('Error logging in. Please try again.');
     }
   };
 
@@ -35,9 +50,10 @@ const Login = () => {
       </header>
       <div className="login-container">
         <form onSubmit={handleLogin} className="login-form">
+          <h2>Login</h2>
           <input
             type="text"
-            placeholder="ID"
+            placeholder="Email"
             value={ID}
             onChange={(e) => setID(e.target.value)}
           />
