@@ -1,50 +1,103 @@
-import React from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import '../App.css';
+import { useNavigate } from 'react-router-dom';
+import productsData from '../product.json';
+import { UserContext } from '../App';
 
-const products = [
-  { id: 1, name: 'Product 1', price: 100, imageUrl: '' },
-  { id: 2, name: 'Product 2', price: 200, imageUrl: '' },
-  { id: 3, name: 'Product 3', price: 300, imageUrl: '' },
-  { id: 4, name: 'Product 4', price: 400, imageUrl: '' },
-  { id: 5, name: 'Product 5', price: 500, imageUrl: '' },
-];
+const MainPage = () => {
+  const navigate = useNavigate();
+  const [products, setProducts] = useState([]);
+  const [cart, setCart] = useState([]);
+  const { user, logout } = useContext(UserContext);
 
-const App = () => {
+  useEffect(() => {
+    setProducts(productsData.products);
+    if (user) {
+      const userCart = JSON.parse(localStorage.getItem(`cart_${user.ID}`)) || [];
+      setCart(userCart);
+    }
+  }, [user]);
+
+  const addToCart = (product) => {
+    if (!user) {
+      alert('Please login to add items to cart');
+      navigate('/Login');
+      return;
+    }
+
+    setCart(prevCart => {
+      let newCart;
+      const existingItem = prevCart.find(item => item.id === product.id);
+      if (existingItem) {
+        newCart = prevCart.map(item =>
+          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+        );
+      } else {
+        newCart = [...prevCart, { ...product, quantity: 1 }];
+      }
+
+      localStorage.setItem(`cart_${user.ID}`, JSON.stringify(newCart));
+      return newCart;
+    });
+  };
+
+  const CartList = () => {
+    if (!user) return null; // 로그인하지 않은 경우 카트를 표시하지 않음
+
+    return (
+      <div className="CartList">
+        <h2>Cart</h2>
+        {cart.length === 0 ? (
+          <p>Your cart is empty</p>
+        ) : (
+          <ul>
+            {cart.map(item => (
+              <li key={item.id}>
+                {item.name} - ${item.price} x {item.quantity}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    );
+  };
+
+  const ProductList = () => {
+    return (
+      <div className="ProductList">
+        {products.map(product => (
+          <div key={product.id} className="ProductItem">
+            <h2>{product.name}</h2>
+            <p>${product.price}</p>
+            <button onClick={() => addToCart(product)}>Add to Cart</button>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
-    <div className="App">
+    <div>
       <header className="App-header">
-        <h1>NxtShop</h1>
+        <h1 onClick={() => navigate('/')}>NxtShop</h1>
         <div className="header-buttons">
-          <button className="header-button">Login</button>
-          <button className="header-button">Cart</button>
+          {user ? (
+            <button onClick={() => {
+              logout();
+              setCart([]);
+              navigate('/');
+            }} className="header-button">Logout</button>
+          ) : (
+            <button onClick={() => navigate('/Login')} className="header-button">Login</button>
+          )}
+          <button onClick={() => navigate('/Cart')} className="header-button">Cart</button>
         </div>
       </header>
       <main>
-        <ProductList products={products} />
+        <ProductList />
       </main>
     </div>
   );
 };
 
-const ProductList = ({ products }) => {
-  return (
-    <div className="ProductList">
-      {products.map(product => (
-        <ProductItem key={product.id} product={product} />
-      ))}
-    </div>
-  );
-};
-
-const ProductItem = ({ product }) => {
-  return (
-    <div className="ProductItem">
-      <img src={product.imageUrl} alt={product.name} />
-      <h2>{product.name}</h2>
-      <p>${product.price}</p>
-      <button>Add to Cart</button>
-    </div>
-  );
-};
-
-export default App;
+export default MainPage;

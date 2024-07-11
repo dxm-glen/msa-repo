@@ -1,24 +1,45 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 import MainPage from './pages/MainPage';
 import Login from './pages/Login';
+import SignUp from './pages/SignUp';
 import Cart from './pages/Cart';
 import './App.css';
+import { Routes, Route, BrowserRouter } from "react-router-dom";
 
-const App = () => {
+export const UserContext = React.createContext(null);
+
+function App() {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('currentUser');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
+  const login = (userData) => {
+    setUser(userData);
+    localStorage.setItem('currentUser', JSON.stringify(userData));
+  };
+
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem('currentUser');
+  };
+
   return (
-      <Router>
-        <div className="App">
-          <main>
-            <Routes>
-              <Route path="/" element={<MainPage />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/cart" element={<Cart />} />
-            </Routes>
-          </main>
-        </div>
-      </Router>
+    <UserContext.Provider value={{ user, login, logout }}>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<MainPage />} />
+          <Route path="/Login" element={<Login />} />
+          <Route path="/SignUp" element={<SignUp />} />
+          <Route path="/Cart" element={<Cart />} />
+        </Routes>
+      </BrowserRouter>
+    </UserContext.Provider>
   );
-};
+}
 
 export default App;

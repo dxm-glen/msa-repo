@@ -1,27 +1,24 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import "../App.css";
 import { useNavigate } from "react-router-dom";
-import memberData from '../member.json';
-import { UserContext } from '../App';
 
-const Login = () => {
+const SignUp = () => {
   const navigate = useNavigate();
   const [ID, setID] = useState('');
   const [PW, setPW] = useState('');
+  const [confirmPW, setConfirmPW] = useState('');
   const [error, setError] = useState('');
-  const { login } = useContext(UserContext);
 
-  const handleLogin = (e) => {
+  const handleSignUp = (e) => {
     e.preventDefault();
-    const user = memberData.member.find(m => m.ID === ID && m.PW === PW);
-    if (user) {
-      // 로그인 성공
-      login(user);  // UserContext의 login 함수 사용
-      navigate('/');
-    } else {
-      // 로그인 실패
-      setError('Invalid ID or password');
+    if (PW !== confirmPW) {
+      setError('Passwords do not match');
+      return;
     }
+    // 여기에 회원가입 로직을 추가하세요
+    // 예: 서버에 사용자 정보를 보내는 API 호출
+    console.log('ID:', ID, 'Password:', PW);
+    navigate('/Login');
   };
 
   return (
@@ -33,8 +30,9 @@ const Login = () => {
           <button onClick={() => navigate("/Cart")} className="header-button">Cart</button>
         </div>
       </header>
-      <div className="login-container">
-        <form onSubmit={handleLogin} className="login-form">
+      <div className="signup-container">
+        <form onSubmit={handleSignUp} className="signup-form">
+          <h2>Sign Up</h2>
           <input
             type="text"
             placeholder="ID"
@@ -47,13 +45,18 @@ const Login = () => {
             value={PW}
             onChange={(e) => setPW(e.target.value)}
           />
-          <button type="submit" className="login-button">Login</button>
+          <input
+            type="password"
+            placeholder="Confirm Password"
+            value={confirmPW}
+            onChange={(e) => setConfirmPW(e.target.value)}
+          />
+          <button type="submit" className="signup-button">Sign Up</button>
           {error && <p className="error">{error}</p>}
-          <button type="button" className="signup-button" onClick={() => navigate("/SignUp")}>SignUp</button>
         </form>
       </div>
     </div>
   );
 };
 
-export default Login;
+export default SignUp;
