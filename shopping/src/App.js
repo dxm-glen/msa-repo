@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import './App.css';
 import MainPage from './pages/MainPage';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import Cart from './pages/Cart';
-import './App.css';
+
+import React, { useState, useEffect } from 'react';
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 
 export const UserContext = React.createContext(null);

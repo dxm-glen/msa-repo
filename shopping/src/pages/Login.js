@@ -1,13 +1,12 @@
 import React, { useState, useContext } from 'react';
-import "../App.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../App';
 import dynamoDb from '../aws-config';
 
 const Login = () => {
   const navigate = useNavigate();
-  const [ID, setID] = useState('');
-  const [PW, setPW] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const { login } = useContext(UserContext);
 
@@ -16,56 +15,71 @@ const Login = () => {
 
     const params = {
       TableName: 'hnu_cutomers_db',
-      Key: {
-        user_email: ID,
+      FilterExpression: 'user_email = :email',
+      ExpressionAttributeValues: {
+        ':email': email,
       },
     };
 
     try {
-      const data = await dynamoDb.get(params).promise();
-      const user = data.Item;
+      const data = await dynamoDb.scan(params).promise();
 
-      if (user && user.user_PW === PW) {
-        // 로그인 성공
-        login(user);  // UserContext의 login 함수 사용
-        navigate('/');
+      if (data.Items.length > 0) {
+        const user = data.Items[0];
+        if (user.user_PW === password) {
+          login(user);
+          navigate('/');
+        } else {
+          setError('Incorrect password');
+        }
       } else {
-        // 로그인 실패
-        setError('Invalid ID or password');
+        setError('User not found');
       }
     } catch (err) {
-      console.error('Error fetching user:', err);
-      setError('Error logging in. Please try again.');
+      console.error('Error fetching user from DynamoDB', err);
+      setError('Error during login. Please try again later.');
     }
   };
 
   return (
     <div>
       <header className="App-header">
-        <h1 onClick={() => navigate("/")}>NxtShop</h1>
+        <h1 onClick={() => navigate('/')}>NxtShop</h1>
         <div className="header-buttons">
-          <button onClick={() => navigate("/Login")} className="header-button">Login</button>
-          <button onClick={() => navigate("/Cart")} className="header-button">Cart</button>
+          <button onClick={() => navigate('/Login')} className="header-button">
+            로그인
+          </button>
+          <button onClick={() => navigate('/Cart')} className="header-button">
+            장바구니
+          </button>
         </div>
       </header>
       <div className="login-container">
-        <form onSubmit={handleLogin} className="login-form">
+        <form className="login-form">
           <h2>Login</h2>
           <input
             type="text"
             placeholder="Email"
-            value={ID}
-            onChange={(e) => setID(e.target.value)}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
           <input
             type="password"
             placeholder="Password"
-            value={PW}
-            onChange={(e) => setPW(e.target.value)}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
-          <button type="submit" className="login-button">Login</button>
+          <button type="submit" className="login-button" onClick={handleLogin}>
+            Login
+          </button>
           {error && <p className="error">{error}</p>}
-          <button type="button" className="signup-button" onClick={() => navigate("/SignUp")}>SignUp</button>
+          <button
+            type="button"
+            className="signup-button"
+            onClick={() => navigate('/SignUp')}
+          >
+            SignUp
+          </button>
         </form>
       </div>
     </div>
