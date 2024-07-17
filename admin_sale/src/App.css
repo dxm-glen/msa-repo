@@ -46,15 +46,6 @@ p {
   margin: 5px 0;
 }
 
-.inventory-item, .customer-item {
-  border-bottom: 1px solid #ddd;
-  padding: 10px 0;
-}
-
-.inventory-item:last-child, .customer-item:last-child {
-  border-bottom: none;
-}
-
 .pagination {
   display: flex;
   justify-content: center;
@@ -65,14 +56,14 @@ p {
   margin: 0 5px;
   padding: 5px 10px;
   border: none;
-  background-color: #5c5c5c;
+  background-color: #4CAF50;
   color: white;
   cursor: pointer;
   border-radius: 5px;
 }
 
 .pagination button:hover {
-  background-color: #5c5c5c;
+  background-color: #45a049;
 }
 
 .pagination button:focus {
