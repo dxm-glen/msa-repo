@@ -13,10 +13,6 @@ const Dashboard = () => {
           <h2 className="text-xl font-semibold mb-2">Current Production</h2>
           <p className="text-gray-400">Production information</p>
         </div>
-        <div className="bg-gray-800 p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold mb-2">Current Shipments</h2>
-          <p className="text-gray-400">Shipment information</p>
-        </div>
       </div>
     </div>
   );
