@@ -164,3 +164,48 @@ export const publishToSNS = async (shipmentId) => {
     return null;
   }
 };
+
+
+
+
+// export const fetchOrderById = async (orderId) => {
+//   try {
+//     const response = await fetch(`${API_BASE_URL}/get_order/${orderId}`);
+//     if (!response.ok) {
+//       throw new Error('Network response was not ok');
+//     }
+//     const data = await response.json();
+//     return data;
+//   } catch (error) {
+//     console.error('Error fetching order:', error);
+//     return null;
+//   }
+// };
+
+// export const fetchProductionById = async (productionId) => {
+//   try {
+//     const response = await fetch(`${API_BASE_URL}/get_production/${productionId}`);
+//     if (!response.ok) {
+//       throw new Error('Network response was not ok');
+//     }
+//     const data = await response.json();
+//     return data;
+//   } catch (error) {
+//     console.error('Error fetching production:', error);
+//     return null;
+//   }
+// };
+
+// export const fetchShipmentById = async (shipmentId) => {
+//   try {
+//     const response = await fetch(`${API_BASE_URL}/get_shipment/${shipmentId}`);
+//     if (!response.ok) {
+//       throw new Error('Network response was not ok');
+//     }
+//     const data = await response.json();
+//     return data;
+//   } catch (error) {
+//     console.error('Error fetching shipment:', error);
+//     return null;
+//   }
+// };
