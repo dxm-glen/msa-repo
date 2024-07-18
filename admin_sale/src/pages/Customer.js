@@ -1,18 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 function Customer() {
   const [customers, setCustomers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [userId, setUserId] = useState('');
+  const [userName, setUserName] = useState('');
   const itemsPerPage = 3;
 
   // Flask API에서 모든 고객 정보를 가져오는 함수
-  const fetchAllCustomers = async (user_id = '') => {
+  const fetchAllCustomers = async (user_name = '') => {
     try {
-      const response = await axios.get(`http://54.166.35.86:8080/api/customers`, {
-        params: { user_id }
+      const response = await axios.get(`${API_BASE_URL}/api/customers`, {
+        params: { user_name }
       });
+      console.log('Fetched customers:', response.data); // 디버깅 출력
       setCustomers(response.data); // 고객 정보 상태 변수에 저장
     } catch (error) {
       console.error('Error fetching customers:', error); // 오류 발생 시 콘솔에서 확인
@@ -21,7 +27,7 @@ function Customer() {
 
   // 컴포넌트가 마운트될 때 모든 고객 정보를 가져옴
   useEffect(() => {
-    fetchAllCustomers();
+    fetchAllCustomers(); 
   }, []);
 
   // 현재 페이지에 해당하는 항목을 계산
@@ -38,9 +44,9 @@ function Customer() {
     pageNumbers.push(i);
   }
 
-  // 특정 user_id를 검색하는 함수
+  // 특정 user_name을 검색하는 함수
   const handleSearch = () => {
-    fetchAllCustomers(userId);
+    fetchAllCustomers(userName);
   };
 
   return (
@@ -48,9 +54,9 @@ function Customer() {
       <h1>고객 목록</h1>
       <input
         type="text"
-        placeholder="User ID"
-        value={userId}
-        onChange={(e) => setUserId(e.target.value)} // 입력된 user_id를 상태에 저장
+        placeholder="User Name"
+        value={userName}
+        onChange={(e) => setUserName(e.target.value)} // 입력된 user_name을 상태에 저장
       />
       <button onClick={handleSearch}>조회</button> 
       <ul>
